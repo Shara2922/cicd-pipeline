@@ -9,13 +9,13 @@ on:
 jobs:
 
   build:
+      if: github.event.workflow_run.conclusion == 'success'  # Ensure CI completed successfully
+      runs-on: self-hosted
 
-    runs-on: self-hosted
-
-    steps:
-    - name: Pull Docker image
+      steps:
+      - name: Pull Docker image
       run: sudo docker pull shara2/cicd-pipeline:latest
-    - name: Delete Old docker container
+      - name: Delete Old docker container
       run: sudo docker rm -f cicd-pipeline-container || true
-    - name: Run Docker Container
+      - name: Run Docker Container
       run: sudo docker run -d -p 8080:8080 --name cicd-pipeline-container shara2/cicd-pipeline
