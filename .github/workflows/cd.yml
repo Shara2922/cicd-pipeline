@@ -28,3 +28,87 @@ jobs:
 
     - name: Run Docker Container
       run: sudo docker run -d -p 80:8080 --name cicd-pipeline-container shara2/cicd-pipeline
+
+    - name: Send Slack Notification (Success)
+      if: success()
+      run: |
+        SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "blocks": [
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Ref*\n<https://github.com/Shara2922/cicd-pipeline/tree/${{ github.ref_name }}|${{ github.ref }}>"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Event*\n${{ github.event_name }}"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Actions URL*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|CD Pipeline>"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Commit*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${SHORT_SHA}>"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": ":white_check_mark: CD Deployment Successful!\n:tada: The deployment for *Shara2922/cicd-pipeline* was successful! :white_check_mark:"
+              }
+            }
+          ]
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: Send Slack Notification (Failure)
+      if: failure()
+      run: |
+        SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "blocks": [
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Ref*\n<https://github.com/Shara2922/cicd-pipeline/tree/${{ github.ref_name }}|${{ github.ref }}>"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Event*\n${{ github.event_name }}"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Actions URL*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|CD Pipeline>"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Commit*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${SHORT_SHA}>"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": ":x: CD Deployment Failed!\n:warning: The deployment for *Shara2922/cicd-pipeline* failed! Check GitHub Actions logs."
+              }
+            }
+          ]
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
