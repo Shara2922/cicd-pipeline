@@ -16,5 +16,15 @@ jobs:
       run: sudo docker pull shara2/cicd-pipeline:latest
     - name: Delete Old docker container
       run: sudo docker rm -f cicd-pipeline-container || true
+
+    - name: Security Scan with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: "shara2/cicd-pipeline:latest"
+        format: "table"
+        ignore-unfixed: true  # Ignore vulnerabilities that have no fixed version
+        severity: "HIGH,CRITICAL"  # Scan only high & critical vulnerabilities
+        exit-code: 0  # Do not fail the pipeline, just show the warnings
+
     - name: Run Docker Container
       run: sudo docker run -d -p 80:8080 --name cicd-pipeline-container shara2/cicd-pipeline
