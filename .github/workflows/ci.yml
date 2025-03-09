@@ -3,10 +3,10 @@ name: CI Pipeline
 on:
   push:
     branches: 
-      - "main"
+      - "**"
       # This will make it run on all branches.
   pull_request:
-    branches: [ "main" ]
+    branches: [ "*" ]
 
 jobs:
 
