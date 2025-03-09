@@ -12,6 +12,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
+    - name: Free disk space
+      run: |
+        sudo docker system prune -af
+        sudo rm -rf /opt/hostedtoolcache/*  # Clear tool cache
+        df -h
+
     - name: Pull Docker image
       run: sudo docker pull shara2/cicd-pipeline:latest
     - name: Delete Old docker container
