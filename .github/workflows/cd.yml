@@ -16,6 +16,8 @@ jobs:
       run: |
         sudo docker system prune -af
         sudo rm -rf /opt/hostedtoolcache/*  # Clear tool cache
+        sudo rm -rf /home/ubuntu/actions-runner/_diag/*  # Clear runner diagnostic logs
+        sudo rm -rf /home/ubuntu/actions-runner/_work/_temp/*  # Clear runner temp files
         df -h
 
     - name: Pull Docker image
